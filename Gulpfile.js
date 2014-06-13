@@ -40,4 +40,18 @@ gulp.task('js:server', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('default', ['stylus', 'js:client', 'js:server']);
+gulp.task('build', ['stylus', 'js:client', 'js:server']);
+
+gulp.task('server', ['build'], function () {
+    var nodemon = require('nodemon');
+
+    nodemon({
+        script: './bin/www',
+        ignore: ['.git', 'public/**', 'assets/**']
+    }).on('start', function () {
+        gutil.log('Nodemon has started the server.');
+    });
+});
+
+// just an alias for the `gulp server` task
+gulp.task('default', ['server']);
