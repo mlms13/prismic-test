@@ -21,6 +21,11 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// in dev, inject the livereload script into all non-static files
+if (app.get('env') === 'development') {
+    app.use(require('connect-livereload')());
+}
+
 app.use('/', routes);
 app.use('/users', users);
 

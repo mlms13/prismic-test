@@ -12,7 +12,7 @@ var paths = {
     },
     client: {
         js: ['./assets/**/*.js'],
-        styles: ['../assets/styl/main.styl']
+        styles: ['./assets/styl/main.styl']
     }
 };
 
@@ -25,7 +25,7 @@ gulp.task('stylus', function () {
 });
 
 gulp.task('js:client', function () {
-    var uglify  = require('gulp-uglify');
+    var uglify = require('gulp-uglify');
 
     return gulp.src(paths.client.js)
         .pipe(jshint())
@@ -40,18 +40,35 @@ gulp.task('js:server', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('build', ['stylus', 'js:client', 'js:server']);
+gulp.task('watch', function () {
+    var server = require('gulp-livereload')();
 
-gulp.task('server', ['build'], function () {
+    gulp.watch('./assets/styl/**/*.styl', ['stylus']);
+    gulp.watch(paths.client.js, ['js:client']);
+
+    // livereload when anything in the public (compiled) folder changes
+    gulp.watch('./public/**').on('change', function (file) {
+        server.changed(file.path);
+    });
+});
+
+// use nodemon to start an auto-reloading server
+gulp.task('server', function () {
     var nodemon = require('nodemon');
 
     nodemon({
         script: './bin/www',
-        ignore: ['.git', 'public/**', 'assets/**']
+        ignore: ['./.git', './public/**', './assets/**']
     }).on('start', function () {
         gutil.log('Nodemon has started the server.');
     });
 });
 
+// compile everything
+gulp.task('build', ['stylus', 'js:client', 'js:server']);
+
+// compile everything, start a server, and start watching
+gulp.task('dev', ['build', 'server', 'watch']);
+
 // just an alias for the `gulp server` task
-gulp.task('default', ['server']);
+gulp.task('default', ['dev']);
