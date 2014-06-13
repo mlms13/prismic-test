@@ -9,4 +9,16 @@ gulp.task('stylus', function () {
         .pipe(gulp.dest('./public/css/'));
 });
 
-gulp.task('default', ['stylus']);
+gulp.task('js', function () {
+    var uglify  = require('gulp-uglify'),
+        jshint  = require('gulp-jshint'),
+        stylish = require('jshint-stylish');
+
+    return gulp.src('./assets/js/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter(stylish))
+        .pipe(uglify())
+        .pipe(gulp.dest('./public/js'));
+});
+
+gulp.task('default', ['stylus', 'js']);
