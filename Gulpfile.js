@@ -45,6 +45,7 @@ gulp.task('watch', function () {
 
     gulp.watch('./assets/styl/**/*.styl', ['stylus']);
     gulp.watch(paths.client.js, ['js:client']);
+    gulp.watch(paths.server.js, ['js:server']);
 
     // livereload when anything in the public (compiled) folder changes
     gulp.watch('./public/**').on('change', function (file) {
