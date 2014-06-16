@@ -1,16 +1,13 @@
 var express      = require('express'),
     app          = express(),
     path         = require('path'),
-    router       = express.Router(),
 
     // middleware
     favicon      = require('static-favicon'),
     logger       = require('morgan'),
     cookieParser = require('cookie-parser'),
+    session      = require('express-session'),
     bodyParser   = require('body-parser');
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +18,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use(session({ 'secret': 'the secret session key'}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // in dev, inject the livereload script into all non-static files
@@ -28,8 +26,7 @@ if (app.get('env') === 'development') {
     app.use(require('connect-livereload')());
 }
 
-app.use('/', routes);
-app.use('/users', users);
+app.use('/', require('./routes/prismic'));
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
